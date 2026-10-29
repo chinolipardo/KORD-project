@@ -1,0 +1,145 @@
+/* ========== 1. COLORS (change the theme here) ========== */
+:root{
+  --accent:rgb(211, 5, 80);        /* magenta (Spotify's green) */
+  --accent-hi:rgb(211, 5, 80);
+  --hue:320;               /* script.js changes this to match the playing song */
+  --bg:#000; --panel:#121212; --card:#181818;
+  --text:#fff; --muted:#b3b3b3;
+  color-scheme:dark;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:"Helvetica Neue",Arial,sans-serif;overflow:hidden}
+button{background:none;border:0;color:inherit;cursor:pointer;font:inherit}
+h1{font-size:34px;margin-bottom:20px}
+h2{font-size:22px;margin:32px 0 14px}
+
+/* ========== 2. LAYOUT (flexbox) ========== */
+.app{display:flex;flex-direction:column;height:100%;gap:8px;padding:8px}
+.top{display:flex;flex:1;gap:8px;min-height:0}
+.box{background:var(--panel);border-radius:12px}
+.side{width:280px;display:flex;flex-direction:column;gap:8px}
+.main{flex:1;overflow-y:auto;background:linear-gradient(hsl(var(--hue) 55% 24%) 0,var(--panel) 380px)}
+.pad{padding:24px}
+
+/* Sidebar */
+.logo{font-size:30px;font-weight:900;letter-spacing:4px;padding:22px 24px 10px;color:var(--accent);text-shadow:0 0 18px #e5239d88}
+.nav button{display:flex;gap:16px;align-items:center;width:100%;padding:12px 24px;color:var(--muted);font-weight:700;font-size:16px}
+.nav i{font-style:normal;font-size:20px}
+.nav button:hover,.nav button.on{color:var(--text)}
+.lib{flex:1;padding:16px;overflow:auto}
+.lib h3{color:var(--muted);font-size:15px;padding:0 8px 12px}
+.libitem{display:flex;gap:12px;align-items:center;padding:8px;border-radius:8px;width:100%;text-align:left}
+.libitem:hover{background:#ffffff14}
+small{color:var(--muted);display:block;margin-top:2px}
+
+/* ========== 3. COVERS AND CARDS ========== */
+.cover{width:40px;height:40px;border-radius:4px;flex-shrink:0;background-size:cover}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}          /* 6 small cards at the top */
+.qcard{display:flex;align-items:center;gap:12px;background:#ffffff1a;border-radius:6px;overflow:hidden;cursor:pointer;font-weight:700;transition:.2s}
+.qcard:hover{background:#ffffff33}
+.qcard .cover{width:56px;height:56px;border-radius:0}
+.qcard span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding-right:12px}
+.cards{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px}              /* row of album cards */
+.card{width:170px;flex-shrink:0;padding:14px;border-radius:10px;background:var(--card);cursor:pointer;transition:.25s}
+.card:hover{background:#2a2a2a;transform:translateY(-4px)}
+.card .art{position:relative;margin-bottom:12px}
+.card .cover{width:100%;aspect-ratio:1;height:auto;border-radius:8px;box-shadow:0 8px 20px #0008}
+.card b,.card small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.go{position:absolute;right:8px;bottom:8px;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#000;opacity:0;transform:translateY(8px);transition:.25s}
+.card:hover .go{opacity:1;transform:none}
+
+/* Playlist page */
+.hero{display:flex;gap:24px;align-items:flex-end;padding:40px 24px 24px}
+.bigcover{width:210px;height:210px;border-radius:8px;box-shadow:0 10px 40px #000a;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,#e5239d,#3a0a2b);flex-shrink:0}
+.hero h1{font-size:64px;line-height:1;margin:8px 0 14px}
+.actions{display:flex;gap:24px;align-items:center;padding:8px 24px 16px}
+.playbig{width:58px;height:58px;border-radius:50%;background:var(--accent);color:#000;font-size:22px;box-shadow:0 0 24px #e5239d88;transition:.2s}
+.playbig:hover{background:var(--accent-hi);transform:scale(1.07)}
+.icon{font-size:22px;color:var(--muted)}
+.icon:hover,.icon.on{color:var(--text)}
+.icon.on{color:var(--accent)}
+
+/* Song table */
+.tr{display:grid;grid-template-columns:40px 1fr 1fr 80px;gap:16px;align-items:center;padding:8px 16px;margin:0 8px;border-radius:6px;color:var(--muted);cursor:pointer}
+.tr.head{border-bottom:1px solid #ffffff22;border-radius:0;cursor:default;font-size:13px;margin-bottom:8px}
+.tr:not(.head):hover{background:#ffffff1a}
+.tr .num{text-align:center}
+.tr .play{display:none;color:var(--text)}
+.tr:not(.head):hover .num span{display:none}
+.tr:not(.head):hover .play{display:inline}
+.song{display:flex;gap:12px;align-items:center;min-width:0;color:var(--text)}
+.song b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr.current .song b,.tr.current .num{color:var(--accent)}
+.heart{font-size:18px;color:var(--muted)}
+.heart.on{color:var(--accent)}
+.search{width:100%;max-width:420px;padding:13px 18px;border-radius:30px;border:0;background:#ffffff1f;color:var(--text);font-size:15px;margin-bottom:16px;outline:none}
+.search:focus{box-shadow:0 0 0 2px var(--accent)}
+
+/* ========== 4. FULL-SCREEN, SPOTIFY-STYLE LYRICS ========== */
+.lyrics{display:none;position:fixed;inset:8px;z-index:30;flex-direction:column;overflow:hidden;border-radius:12px;background:linear-gradient(155deg,hsl(var(--hue) 55% 25%),#151515 58%,#080808);box-shadow:0 18px 80px #000c}
+.lyrics.open{display:flex}
+.lyrics-top{display:flex;align-items:center;gap:18px;padding:18px 26px;border-bottom:1px solid #ffffff12;flex-shrink:0}
+.lyrics-back{font-size:32px;line-height:1;color:#fff;transform:rotate(0deg);width:42px;height:42px;border-radius:50%;background:#ffffff12}
+.lyrics-back:hover{background:#ffffff25}
+.lyrics-heading{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lyrics-heading small{font-size:10px;letter-spacing:2px;color:#ffffff99}
+.lyrics-heading b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lyrics-spacer{width:42px}
+.lyrics-body{display:grid;grid-template-columns:minmax(220px, .8fr) minmax(0,1.2fr);grid-template-rows:auto 1fr;gap:10px 44px;flex:1;min-height:0;padding:34px clamp(24px,6vw,100px) 24px;max-width:1500px;width:100%;margin:0 auto}
+.lyrics-art{grid-column:1;grid-row:1;width:min(100%,330px);aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center;font-size:clamp(30px,4vw,58px);font-weight:900;letter-spacing:3px;box-shadow:0 16px 44px #0007}
+.lyrics-song-info{grid-column:1;grid-row:2;align-self:start;padding-top:10px}
+.lyrics-song-info h2{font-size:clamp(24px,3vw,38px);margin:0 0 8px;line-height:1.12;overflow-wrap:anywhere}
+.lyrics-song-info p{color:#ffffffa8;font-size:16px}
+.lines{grid-column:2;grid-row:1 / span 2;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 20px 40vh 0;scrollbar-width:thin;scrollbar-color:#ffffff35 transparent;mask-image:linear-gradient(to bottom,transparent 0,#000 8%,#000 92%,transparent 100%)}
+.lines p{font-size:clamp(25px,3.1vw,42px);line-height:1.18;font-weight:800;color:#ffffff45;margin:0 0 22px;cursor:pointer;transition:color .25s,font-size .25s,transform .25s;overflow-wrap:anywhere}
+.lines p:hover{color:#ffffffb8}
+.lines p.on{color:#fff;font-size:clamp(29px,3.5vw,48px);transform:translateX(4px)}
+.lyrics:not(.open){pointer-events:none}
+
+/* ========== 5. PLAYER BAR ========== */
+.player{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;height:84px;gap:16px;flex-shrink:0}
+.now{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
+.now .cover{width:56px;height:56px;border-radius:6px}
+.now b,.now small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.center{flex:2;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:600px}
+.ctrls{display:flex;gap:20px;align-items:center}
+.ctrls .icon{font-size:18px}
+.pp{width:38px;height:38px;border-radius:50%;background:var(--text);color:#000;font-size:14px;transition:.2s}
+.pp:hover{transform:scale(1.08);background:var(--accent-hi)}
+.bar{display:flex;gap:8px;align-items:center;width:100%;font-size:12px;color:var(--muted)}
+.track{flex:1;height:5px;background:#ffffff33;border-radius:3px;cursor:pointer}
+.fill{height:100%;width:0;background:var(--text);border-radius:3px}
+.track:hover .fill{background:var(--accent)}
+.vol{flex:1;display:flex;justify-content:flex-end;align-items:center;gap:12px}
+.vol input{width:100px;accent-color:var(--accent)}
+
+/* ========== 6. MOBILE (narrower than 800px) ========== */
+@media (max-width:800px){
+  .top{flex-direction:column-reverse}                 /* sidebar goes to the bottom */
+  .side{width:100%}
+  .logo,.lib{display:none}
+  .nav{display:flex}
+  .nav button{flex-direction:column;gap:2px;padding:10px;font-size:12px;align-items:center}
+  .quick{grid-template-columns:repeat(2,1fr)}
+  .hero{flex-direction:column;align-items:center;text-align:center;padding:24px 16px 8px}
+  .hero h1{font-size:34px}
+  .bigcover{width:180px;height:180px}
+  .tr{grid-template-columns:32px 1fr 70px}
+  .tr .album,.vol input,.ctrls .opt,.bar span{display:none}
+  .player{position:relative;height:72px;padding:8px 12px}
+  .center{flex:0}
+  .bar{position:absolute;left:14px;right:14px;bottom:5px;width:auto}
+  .lyrics{inset:0;border-radius:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .lyrics-top{padding:12px 16px}
+  .lyrics-body{display:flex;flex-direction:column;gap:16px;padding:18px 22px 12px;overflow:hidden}
+  .lyrics-art{display:none}
+  .lyrics-song-info{padding:0;flex-shrink:0}
+  .lyrics-song-info h2{font-size:24px;margin-bottom:3px}
+  .lyrics-song-info p{font-size:14px}
+  .lines{width:100%;padding:14px 4px 35vh 0}
+  .lines p{font-size:25px;margin-bottom:20px}
+  .lines p.on{font-size:30px}
+}

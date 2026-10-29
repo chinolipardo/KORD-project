@@ -1,131 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify MVP Layout</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>KOЯD</title>
+  <link rel="stylesheet" href="style.css">   <!-- design -->
 </head>
 <body>
+<div class="app">
 
-    <div id="app-wrapper">
-        <div id="main-workspace">
+  <div class="top">
+    <!-- 1. SIDEBAR: logo, navigation, playlists -->
+    <aside class="side">
+      <div class="box">
+        <div class="logo">KOЯD</div>
+        <nav class="nav">
+          <button class="on" data-view="home"><i>⌂</i> Home</button>
+          <button data-view="search"><i>⌕</i> Search</button>
+          <button data-view="library"><i>▤</i> Your Library</button>
+        </nav>
+      </div>
+      <div class="box lib">
+        <h3>Playlists</h3>
+        <button class="libitem" data-view="playlist">
+          <div class="cover" style="background:linear-gradient(135deg,#e5239d,#3a0a2b)"></div>
+          <div><b>Nu Metal Essentials</b><small>Playlist · KOЯD</small></div>
+        </button>
+      </div>
+    </aside>
 
-            <!-- 1. SIDEBAR NAVIGATION -->
-            <aside id="sidebar">
-                <div class="logo">
-                    <h2>🎵 SpotMVP</h2>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="#" id="nav-home">Home</a></li>
-                        <li><a href="#" id="nav-search">Search</a></li>
-                        <li><a href="profile.html" id="nav-profile-link">Your Profile</a></li>
-                    </ul>
-                </nav>
-                <div class="playlists-section">
-                    <h3>Playlists</h3>
-                    <ul>
-                        <li class="sidebar-playlist" data-playlist="Awesome Mix" style="list-style: none; margin-bottom: 12px; color: #da9eb7; cursor: pointer;">My Awesome Mix</li>
-                        <li class="sidebar-playlist" data-playlist="Coding Beats" style="list-style: none; margin-bottom: 12px; color: #da9eb7; cursor: pointer;">Coding Beats</li>
-                        <li class="sidebar-playlist" data-playlist="Lo-Fi Chill" style="list-style: none; margin-bottom: 12px; color: #da9eb7; cursor: pointer;">Lo-Fi Chill</li>
-                    </ul>
-                </div>
-            </aside>
+    <!-- 2. MAIN SCREEN: filled by script.js (home, playlist, search, library) -->
+    <main class="box main" id="main"></main>
 
-            <!-- 2. MAIN CONTENT AREA -->
-            <main id="main-content">
-                <header id="top-nav">
-                    <div class="nav-buttons">
-                        <button id="btn-back" title="Go back" style="background: #260918; border: none; color: white; padding: 8px 12px; border-radius: 50%; cursor: pointer; margin-right: 5px;">&lt;</button>
-                        <button id="btn-forward" title="Go forward" style="background: #260918; border: none; color: white; padding: 8px 12px; border-radius: 50%; cursor: pointer;">&gt;</button>
-                    </div>
-                    <div class="user-profile">
-                        <a href="profile.html" id="btn-profile" style="background: #260918; border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; text-decoration: none; display: inline-block;">User Profile</a>
-                    </div>
-                </header>
+    <!-- 3. FULL-SCREEN LYRICS VIEW: opens with the lyrics button -->
+    <section class="lyrics" id="lyrics" aria-hidden="true" aria-label="Now playing lyrics">
+      <div class="lyrics-top">
+        <button class="icon lyrics-back" id="lyr-close" aria-label="Close lyrics">⌄</button>
+        <div class="lyrics-heading"><small>NOW PLAYING</small><b id="lyr-title">Lyrics</b></div>
+        <span class="lyrics-spacer"></span>
+      </div>
+      <div class="lyrics-body">
+        <div class="lyrics-art" id="lyr-art">KOЯD</div>
+        <div class="lyrics-song-info"><h2 id="lyr-song-title">Choose a song</h2><p id="lyr-artist">Lyrics will follow the music as it plays.</p></div>
+        <div class="lines" id="lines"><p>Play a song to see lyrics.</p></div>
+      </div>
+    </section>
+  </div>
 
-                <!-- SECTION A: HOME VIEW -->
-                <section id="home-view" class="view-panel">
-                    <h1 id="greeting">Good Morning</h1>
-                    
-                    <div class="grid-container">
-                        <div class="card" data-playlist="Liked Songs">Liked Songs</div>
-                        <div class="card" data-playlist="Daily Mix 1">Daily Mix 1</div>
-                        <div class="card" data-playlist="Discover Weekly">Discover Weekly</div>
-                    </div>
-
-                    <div class="track-list-container">
-                        <h2>Popular Tracks</h2>
-                        <table width="100%">
-                            <thead>
-                                <tr>
-                                    <th align="left">#</th>
-                                    <th align="left">Title</th>
-                                    <th align="left">Album</th>
-                                    <th align="left">Duration</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Injected dynamically by app.js -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- SECTION B: SEARCH VIEW (Hidden by default) -->
-                <section id="search-view" class="view-panel" style="display: none;">
-                    <h1>Search</h1>
-                    <input type="text" id="search-bar" placeholder="What do you want to listen to?" style="width: 100%; padding: 12px; margin: 20px 0; border-radius: 20px; border: none; background-color: #260918; color: #fff;">
-                    <div class="track-list-container">
-                        <h2>Search Results</h2>
-                        <table width="100%" id="search-results-table">
-                            <thead>
-                                <tr>
-                                    <th align="left">#</th>
-                                    <th align="left">Title</th>
-                                    <th align="left">Album</th>
-                                    <th align="left">Duration</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Injected dynamically when typing -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </main>
-
-        </div>
-
-        <!-- 3. PERSISTENT PLAYER FOOTER -->
-        <footer id="player-bar">
-            <div class="now-playing">
-                <p><strong>Track Title</strong></p>
-                <p><small>Artist Name</small></p>
-            </div>
-
-            <div class="playback-engine">
-                <div class="playback-buttons">
-                    <button id="btn-prev">⏮</button>
-                    <button id="btn-play">▶</button>
-                    <button id="btn-next">⏭</button>
-                </div>
-                <div class="progress-container">
-                    <span id="current-time">0:00</span>
-                    <input type="range" id="track-progress" min="0" max="100" value="0" style="width: 200px;">
-                    <span id="total-duration">-:--</span>
-                </div>
-            </div>
-
-            <div class="volume-controls">
-                <label for="volume">🔊</label>
-                <input type="range" id="volume" min="0" max="100" value="50">
-            </div>
-        </footer>
+  <!-- 4. PLAYER BAR -->
+  <footer class="box player">
+    <div class="now" id="now"></div>
+    <div class="center">
+      <div class="ctrls">
+        <button class="icon opt" id="shuf" title="Shuffle">⤮</button>
+        <button class="icon" id="prev" title="Previous">⏮</button>
+        <button class="pp" id="pp" title="Play">▶</button>
+        <button class="icon" id="next" title="Next">⏭</button>
+        <button class="icon opt" id="rep" title="Repeat">↻</button>
+      </div>
+      <div class="bar"><span id="cur">0:00</span><div class="track" id="track"><div class="fill" id="fill"></div></div><span id="tot">0:00</span></div>
     </div>
+    <div class="vol"><button class="icon" id="lyr-btn" title="Lyrics">🎤</button><input type="range" id="vol" min="0" max="100" value="70"></div>
+  </footer>
+</div>
 
-    <!-- Scripts linked at the base of execution -->
-    <script src="app.js"></script>
+<script src="songs.js"></script>   <!-- the song list -->
+<script src="script.js"></script>  <!-- how the app works -->
 </body>
 </html>

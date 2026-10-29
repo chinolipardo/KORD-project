@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOЯD Lyric Sync Tool</title>
+<style>
+  :root{color-scheme:dark;--accent:#e5239d}
+  *{box-sizing:border-box}
+  body{background:#121212;color:#fff;font-family:Arial,sans-serif;max-width:760px;margin:0 auto;padding:24px}
+  h1{color:var(--accent);letter-spacing:3px}
+  h3{margin:22px 0 8px}
+  p,small{color:#b3b3b3}
+  textarea,select,input[type=file]{width:100%;background:#1f1f1f;color:#fff;border:1px solid #333;border-radius:8px;padding:10px;font:inherit}
+  textarea{height:150px}
+  button{background:var(--accent);color:#000;border:0;border-radius:24px;padding:10px 20px;font-weight:700;cursor:pointer;margin:8px 8px 0 0}
+  button.grey{background:#333;color:#fff}
+  audio{width:100%;margin-top:10px}
+  .now{background:#1f1f1f;border-radius:12px;padding:24px;text-align:center;margin-top:12px}
+  .now .big{font-size:28px;font-weight:800}
+  .now .nxt{color:#b3b3b3;margin-top:10px}
+  #out{height:200px;font-family:monospace;font-size:13px}
+</style>
+</head>
+<body>
+<h1>KOЯD · Lyric Sync</h1>
+<p>Play a song, and press <b>Space</b> at the moment each line starts. The tool writes the timed lyrics code for you.</p>
+
+<h3>1. Pick the song</h3>
+<select id="pick"></select>
+<small>Or choose a file from your computer instead:</small>
+<input type="file" id="file" accept="audio/*">
+<audio id="audio" controls></audio>
+
+<h3>2. Paste the lyrics (one line per row, blank lines are skipped)</h3>
+<textarea id="text" placeholder="Paste lyrics here..."></textarea>
+<button id="start">▶ Start syncing</button>
+<button class="grey" id="undo">↩ Undo last line (Backspace)</button>
+
+<div class="now">
+  <small id="count">Not started</small>
+  <div class="big" id="cur">–</div>
+  <div class="nxt" id="nxt"></div>
+  <button id="tap">TAP — line starts now (Space)</button>
+</div>
+
+<h3>3. Copy this into songs.js</h3>
+<p>Replace that song’s <code>lyrics:[]</code> with the result.</p>
+<textarea id="out" readonly></textarea>
+<button id="copy">Copy</button>
+
+<h3>Already have timed lyrics (.lrc)?</h3>
+<p>Paste them in box 2 instead, then press:</p>
+<button class="grey" id="lrc">Convert .lrc to code</button>
+
+<script src="songs.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const audio = $("audio");
+let lines = [], stamps = [], idx = 0, active = false;
+
+// --- song picker (uses the list from songs.js) ---
+songs.forEach((s, i) => $("pick").innerHTML += `<option value="${i}">${s.t} – ${s.a}</option>`);
+function loadSong() { audio.src = songs[$("pick").value].src; }
+$("pick").onchange = loadSong; loadSong();
+$("file").onchange = e => { if (e.target.files[0]) audio.src = URL.createObjectURL(e.target.files[0]); };
+
+// --- sync ---
+$("start").onclick = () => {
+  lines = $("text").value.split("\n").map(l => l.trim()).filter(Boolean);
+  stamps = []; idx = 0; active = lines.length > 0;
+  audio.currentTime = 0; audio.play(); show();
+};
+function tap() {                                   // save the time of this line
+  if (!active || idx >= lines.length) return;
+  stamps[idx] = Math.max(0, +(audio.currentTime - 0.2).toFixed(1));   // -0.2s = reaction time
+  idx++; show();
+}
+function undo() {
+  if (idx === 0) return;
+  idx--; stamps.length = idx;
+  audio.currentTime = Math.max(0, (stamps[idx - 1] ?? 0));
+  show();
+}
+function show() {
+  $("count").textContent = active ? `Line ${Math.min(idx + 1, lines.length)} of ${lines.length}` : "Not started";
+  $("cur").textContent = idx < lines.length ? lines[idx] : (active ? "✓ Done!" : "–");
+  $("nxt").textContent = lines[idx + 1] ? "Next: " + lines[idx + 1] : "";
+  $("out").value = idx ? "lyrics:[\n" + lines.slice(0, idx).map((l, i) =>
+    `  [${stamps[i]}, ${JSON.stringify(l)}]`).join(",\n") + "\n]" : "";
+}
+
+// --- convert .lrc text like [01:23.45] some line ---
+$("lrc").onclick = () => {
+  const rows = $("text").value.split("\n").map(l => l.match(/^\[(\d+):(\d+(?:\.\d+)?)\](.*)/)).filter(m => m && m[3].trim());
+  $("out").value = "lyrics:[\n" + rows.map(m =>
+    `  [${+(m[1] * 60 + +m[2]).toFixed(1)}, ${JSON.stringify(m[3].trim())}]`).join(",\n") + "\n]";
+};
+
+$("tap").onclick = tap;
+$("undo").onclick = undo;
+$("copy").onclick = () => { $("out").select(); document.execCommand("copy"); };
+document.addEventListener("keydown", e => {
+  if (["TEXTAREA", "SELECT", "INPUT"].includes(e.target.tagName)) return;
+  if (e.code === "Space") { e.preventDefault(); tap(); }
+  if (e.code === "Backspace") { e.preventDefault(); undo(); }
+});
+</script>
+</body>
+</html>
